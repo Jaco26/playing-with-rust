@@ -5,3 +5,4 @@ authors = ["jacobalbright <jacob.albright23@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+uuid = { version = "0.7", features = ["v4"] }
