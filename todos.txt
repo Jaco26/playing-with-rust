@@ -2,3 +2,26 @@
 id:            a0c86b91-da0a-44bc-a5a8-3ae753c17932
 status:        pending
 descrtiption:  I have a uuid
+id:            d7900f80-8492-483d-b517-df3d6c3ef3a7
+status:        pending
+descrtiption:  I need to clean up
+
+id:            c6c68f91-16bd-43d4-b21d-17f3ebdf36af
+status:        pending
+descrtiption:  I need to turn off the light
+
+id:            bda4b1c2-4412-45fe-9c84-8271c5404256
+status:        reopened
+descrtiption:  test this
+
+id:            d39dd86e-2e97-4761-bb79-72cfffe9f030
+status:        pending
+descrtiption:  test this again
+
+id:            532660f7-6f52-4dbf-ad85-819752d42dfa
+status:        pending
+descrtiption:  Read about derefs
+
+id:            9405982b-ed34-472d-9d43-d0c4febfe44f
+status:        pending
+descrtiption:  Hello hi hello

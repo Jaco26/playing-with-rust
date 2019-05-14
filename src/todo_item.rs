@@ -12,6 +12,26 @@ enum Completion {
   Reopened,
 }
 
+impl Completion {
+  fn to_string(&self) -> String {
+    match *self {
+      Completion::Reopened => String::from("reopened"),
+      Completion::Complete => String::from("complete"),
+      Completion::Pending => String::from("pending"),
+    }
+  }
+
+  fn from_string(&self, name: &str) -> Option<Completion>{
+    match name {
+      "reponened" => Some(Completion::Reopened),
+      "complete" => Some(Completion::Complete),
+      "pending" => Some(Completion::Pending),
+      _ => None
+    }
+  }
+}
+
+
 #[derive(Debug)]
 pub struct TodoItem {
   id: Uuid,
@@ -28,32 +48,22 @@ impl TodoItem {
     })
   }
 
-  pub fn save(&self) -> Result<(), Box<dyn Error>> {
+  pub fn save_to(&self, filename: &str) -> Result<(), Box<dyn Error>> {
     let mut file = OpenOptions::new()
       .append(true)
       .create(true)
-      .open("todos.txt")?;
+      .open(filename)?;
     
     file.write_all(self.format_output().as_bytes())?;
 
     Ok(())
   }
 
-  fn status_to_string(&self) -> String {
-    match &self.status {
-      Completion::Pending => String::from("pending"),
-      Completion::Complete => String::from("complete"),
-      Completion::Reopened => String::from("reopened"),
-    }
-  }
-
   fn format_output(&self) -> String {
     format!("
+
 id:            {}
 status:        {}
-descrtiption:  {}", self.id, self.status_to_string(), self.description)
+descrtiption:  {}", self.id, self.status.to_string(), self.description)
   }
-
-  
-
 }
