@@ -7,6 +7,10 @@ use std::io::{Error, ErrorKind};
 fn read(filepath: &str) -> Result<(), Error> {
   let file_str = fs::read_to_string(filepath)?;
   let lines_vec: Vec<&str> = file_str.split("\n\n").collect();
+  
+  // for item in lines_vec {
+  //   let 
+  // }
   println!("{:#?}", lines_vec[0].trim());
   // println!("{}", file_vec);
   // for line in lines_vec {

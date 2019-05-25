@@ -40,11 +40,18 @@ pub struct TodoItem {
 }
 
 impl TodoItem {
-  pub fn new(description: &str) -> Result<TodoItem, &'static str> {
+  pub fn new(mut args: std::env::Args) -> Result<TodoItem, &'static str> {
+    args.next();
+
+    let description = match args.next() {
+      Some(s) => s,
+      None => return Err("No description provided"),
+    };
+
     Ok(TodoItem {
       id: Uuid::new_v4(),
       status: Completion::Pending,
-      description: String::from(description),
+      description,
     })
   }
 
