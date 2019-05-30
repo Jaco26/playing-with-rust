@@ -2,26 +2,58 @@ pub mod user_actions;
 pub mod util;
 pub mod todo_item;
 
+#[derive(Debug)]
+pub enum Action {
+  Create { body: String },
+  Read,
+}
+
 pub struct Config {
   flag: String,
-  body: Option<String>
+  pub output_file: String,
+  body: Option<String>,
+  action: Option<Action>,
 }
 
 impl Config {
-  pub fn new(args: Vec<String>) -> Result<Config, &'static str> {
-    if args.len() < 1 || args.len() > 2 {
-      return Err("Incorrect number of args");
-    }
+  pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+    args.next(); // consume the executable name...the first command line arg
 
-    let flag = args[0].clone();
-    let body;
+    let output_file = String::from("todos.txt");
 
-    if args.len() == 1 {
-      body = None;
-    } else {
-      body = Some(args[1].clone());
-    }
+    let flag = match args.next() {
+      Some(s) => s,
+      None => return Err("No action flag provided"),
+    };
 
-    Ok( Config { flag, body } )
+    let body = args.next();
+
+    Ok( Config { flag, output_file, body, action: None  } )
+  }
+
+  pub fn parse_args(&self) -> Result<Action, &'static str> {
+    let action = match self.flag.as_str() {
+      "-r" => Action::Read,
+      "-w" => {
+        match &self.body {
+          Some(txt) => Action::Create { body: String::from(txt.as_str()) },
+          None => return Err("No body provided with -w action flag")
+        }
+      },
+      _ => return Err("No action flag present")
+    };
+    Ok(action)
+  }
+
+  pub fn dispatch_action(&self, action: Action) -> Result<(), Box<dyn std::error::Error>> {
+    match action {
+      Action::Read => user_actions::read(&self.output_file)?,
+      Action::Create{ body } => {
+        user_actions::write(&self.output_file, &body)?;
+      },
+    };
+    Ok(())
   }
 }
+
+

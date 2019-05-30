@@ -1,29 +1,22 @@
 use std::env;
-use todo::{
-    util,
-    user_actions, 
-    todo_item, 
-    Config,
-};
+use todo::{util, Config};
 
 fn main() {
-
-    let action_dispatcher = user_actions::ActionDispatcher;
-    
-    util::toggle_file_lock("todos.txt", false).unwrap();
-
     let args = env::args();
-
-    let item = todo_item::TodoItem::new(args).unwrap_or_else(|err| {
-        panic!("There was an error creating a TodoItem!: {}", err);
+    
+    let config = Config::new(args).unwrap_or_else(|err| {
+        panic!("Error creating config: {}", err);
     });
 
-    item.save_to("todos.txt").unwrap_or_else(|err| {
-        panic!("There was an error saving the TodoItem!: {}", err);
+    util::toggle_file_lock(&config.output_file, false).unwrap();
+
+    let action = config.parse_args().unwrap_or_else(|err| {
+        panic!("Error parsing args: {}", err);
+    });
+
+    config.dispatch_action(action).unwrap_or_else(|err| {
+        panic!("Error dispatching action: {}", err);
     });
 
     util::toggle_file_lock("todos.txt", true).unwrap();
-
 }
-
-

@@ -1,48 +1,21 @@
 use std::fs;
-use std::io::{Error, ErrorKind};
+use std::io::{ Error };
+use super::todo_item::TodoItem;
 
 
-
-
-fn read(filepath: &str) -> Result<(), Error> {
+pub fn read(filepath: &str) -> Result<(), Error> {
   let file_str = fs::read_to_string(filepath)?;
-  let lines_vec: Vec<&str> = file_str.split("\n\n").collect();
+  let lines_vec: Vec<&str> = file_str.split("\n\r").collect();
   
-  // for item in lines_vec {
-  //   let 
-  // }
-  println!("{:#?}", lines_vec[0].trim());
-  // println!("{}", file_vec);
-  // for line in lines_vec {
-  //   println!("{}", line.to_ascii_lowercase());
-  // }
+  println!("{:#?}", lines_vec);
+
   Ok(())
 }
 
-pub struct ActionDispatcher;
+pub fn write(filepath: &str, body: &str) -> Result<(), Box<dyn std::error::Error>> {
+  let item = TodoItem::new(body);
 
+  let result = item.save_to(filepath)?;
 
-impl ActionDispatcher {
-  pub fn parse(&self, opt: &str) -> Result<(), Box<dyn std::error::Error>> {
-    match opt {
-      "-r" | "--read" => {
-        read("todos.txt")?;
-        Ok(())
-      },
-      "-w" | "--write" => {
-        println!("writing!");
-        Ok(())
-      },
-      "-u" | "--update" => {
-        println!("updating!");
-        Ok(())
-      },
-      "-d" | "--delete" => {
-        println!("deleting!");
-        Ok(())
-      },
-      _ => Err(Box::new(Error::new(ErrorKind::Other, "No matching flags")))
-    }
-  }
+  Ok(())
 }
-

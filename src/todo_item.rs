@@ -40,19 +40,12 @@ pub struct TodoItem {
 }
 
 impl TodoItem {
-  pub fn new(mut args: std::env::Args) -> Result<TodoItem, &'static str> {
-    args.next();
-
-    let description = match args.next() {
-      Some(s) => s,
-      None => return Err("No description provided"),
-    };
-
-    Ok(TodoItem {
+  pub fn new(description: &str) -> TodoItem {
+    TodoItem {
       id: Uuid::new_v4(),
       status: Completion::Pending,
-      description,
-    })
+      description: String::from(description),
+    }
   }
 
   pub fn save_to(&self, filename: &str) -> Result<(), Box<dyn Error>> {
@@ -68,9 +61,8 @@ impl TodoItem {
 
   fn format_output(&self) -> String {
     format!("
-
 id:            {}
 status:        {}
-descrtiption:  {}", self.id, self.status.to_string(), self.description)
+descrtiption:  {}\n\r", self.id, self.status.to_string(), self.description)
   }
 }
