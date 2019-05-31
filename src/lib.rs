@@ -31,26 +31,28 @@ impl Config {
     Ok( Config { flag, output_file, body, action: None  } )
   }
 
-  pub fn parse_args(&self) -> Result<Action, &'static str> {
-    let action = match self.flag.as_str() {
-      "-r" => Action::Read,
+  pub fn parse_args(&mut self) -> Result<(), &'static str> {
+    match self.flag.as_str() {
+      "-r" => self.action = Some(Action::Read),
       "-w" => {
         match &self.body {
-          Some(txt) => Action::Create { body: String::from(txt.as_str()) },
-          None => return Err("No body provided with -w action flag")
-        }
+          Some(txt) => self.action = Some(Action::Create { body: String::from(txt.as_str()) }),
+          None => return Err("No body provided with -w action flag"),
+        };
       },
       _ => return Err("No action flag present")
     };
-    Ok(action)
+    Ok(())
   }
 
-  pub fn dispatch_action(&self, action: Action) -> Result<(), Box<dyn std::error::Error>> {
-    match action {
-      Action::Read => user_actions::read(&self.output_file)?,
-      Action::Create{ body } => {
-        user_actions::write(&self.output_file, &body)?;
-      },
+  pub fn dispatch_action(&self) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(action) = &self.action {
+      match action {
+        Action::Read => user_actions::read(&self.output_file)?,
+        Action::Create{ body } => {
+          user_actions::write(&self.output_file, &body)?;
+        },
+      }
     };
     Ok(())
   }
