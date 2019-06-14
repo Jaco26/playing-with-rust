@@ -5,31 +5,18 @@ use super::todo_item::TodoItem;
 
 
 pub fn read(filepath: &str) -> Result<(), Error> {
-  let file_str = fs::read_to_string(filepath)?;
+  let file_text = fs::read_to_string(filepath)?;
 
-  let items_txt_iter = file_str.split("\n\r");
-
-  let items = items_txt_iter.fold(Vec::<TodoItem>::new(), |mut acc, item: &str| {
-    let mut map: HashMap<String, String> = HashMap::new();
-
-    for line in item.lines() {
-      let segments: Vec<String> = line.split(":").map(|item| item.trim())
-        .map(|s| s.to_string())
-        .collect();
-
-      if segments.len() > 1 {
-        map.insert(segments[0].to_string(), segments[1].to_string());
+  let todos_map: HashMap<String, TodoItem> = file_text.split("\n\r")
+    .fold(HashMap::<String, TodoItem>::new(), |mut acc, section| {
+      if !section.trim().is_empty() {
+        let todo_item = TodoItem::from_text(section);
+        acc.insert(todo_item.id.to_string(), todo_item);
       }
-    }
-
-    if !map.is_empty() {
-      acc.push(TodoItem::from_hash_map(map));
-    }
-    
-    acc
-  });
-
-  println!("{:#?}", items);
+      acc
+    });
+  
+  println!("{:#?}", todos_map);
 
   Ok(())
 }

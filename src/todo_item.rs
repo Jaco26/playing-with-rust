@@ -3,11 +3,10 @@ extern crate uuid;
 use std::error::Error;
 use std::io::prelude::*;
 use std::fs::{OpenOptions};
-use std::collections::HashMap;
 use uuid::Uuid;
 
 #[derive(Debug)]
-enum Completion {
+pub enum Completion {
   Pending,
   Complete,
   Reopened,
@@ -22,7 +21,7 @@ impl Completion {
     }
   }
 
-  fn from_string(name: &str) -> Option<Completion>{
+  fn from_str(name: &str) -> Option<Completion>{
     match name {
       "reponened" => Some(Completion::Reopened),
       "complete" => Some(Completion::Complete),
@@ -35,28 +34,42 @@ impl Completion {
 
 #[derive(Debug)]
 pub struct TodoItem {
-  id: Uuid,
-  description: String,
-  status: Completion,
+  pub id: Uuid,
+  pub description: String,
+  pub status: Option<Completion>,
 }
 
 impl TodoItem {
   pub fn new(description: &str) -> TodoItem {
     TodoItem {
       id: Uuid::new_v4(),
-      status: Completion::Pending,
+      status: Some(Completion::Pending),
       description: String::from(description),
     }
   }
 
-  pub fn from_hash_map(map: HashMap<String, String>) -> TodoItem {
-    let id = Uuid::parse_str(map.get("id").unwrap()).unwrap();
-    let status_string = map.get("status").unwrap().as_str();
+  fn empty() -> TodoItem {
     TodoItem {
-      id,
-      description: map.get("description").unwrap().to_string(),
-      status: Completion::from_string(status_string).unwrap(),
+      id: Uuid::parse_str("00000000-0000-0000-0000-000000000000").unwrap(),
+      description: String::from(""),
+      status: None,
     }
+  }
+
+  pub fn from_text(text: &str) -> TodoItem {
+    let mut todo = TodoItem::empty();
+    for line in text.lines() {
+      let mut segments = line.split(":").map(|seg| seg.trim());
+      let key = segments.next().unwrap_or("");
+      let value = segments.next().unwrap_or("");
+      match key {
+        "id" => todo.id = Uuid::parse_str(value).unwrap_or_default(),
+        "description" => todo.description = String::from(value),
+        "status" => todo.status = Completion::from_str(value),
+        _ => {},
+      }
+    }
+    todo
   }
 
   pub fn save_to(&self, filename: &str) -> Result<(), Box<dyn Error>> {
@@ -71,9 +84,13 @@ impl TodoItem {
   }
 
   fn format_output(&self) -> String {
+    let status = match &self.status {
+      Some(val) => val.to_string(),
+      None => panic!("Could not convert TodoItem.status to String")
+    };
     format!("
 id:            {}
 status:        {}
-description:  {}\n\r", self.id, self.status.to_string(), self.description)
+description:   {}\n\r", self.id, status, self.description)
   }
 }

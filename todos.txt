@@ -1,9 +1,17 @@
 
-
-id:            5d0d54fa-3597-4a83-84d9-e80e164ed101
+id:            e3eff843-4c27-4051-bbfa-1afd0abbe7a4
 status:        pending
-description:  Helllo there
+description:   take out the recycling
 
-id:            fbe060dd-d2a6-47a9-ae4a-11b7e34a7048
+id:            ecd3ff02-ec3e-48e8-8bbb-3198079b50af
 status:        pending
-description:  Figure out the internet...
+description:   get to know my neighborhood better
+
+id:            07fc745f-9e85-456a-ae03-ce990b659d25
+status:        pending
+description:   prepare dinner
+
+id:            6e83362f-49b2-4338-a9c4-cab7909516a2
+status:        pending
+description:   drink some water
+
