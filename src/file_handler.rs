@@ -15,6 +15,7 @@ pub fn append_to(filename: &str, body: &str) -> Result<(), Box<dyn std::error::E
 
 pub fn write_new(filename: &str, body: &str) ->  Result<(), Box<dyn std::error::Error>> {
   let mut file = OpenOptions::new()
+    .write(true)
     .create_new(true)
     .open(filename)?;
   

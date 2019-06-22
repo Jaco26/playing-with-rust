@@ -1,7 +1,9 @@
+
 use std::fs;
 use std::io::{ Error };
 use std::collections::HashMap;
 use super::todo_item::TodoItem;
+use super::file_handler;
 
 
 pub fn read(filepath: &str) -> Result<(), Error> {
@@ -24,7 +26,9 @@ pub fn read(filepath: &str) -> Result<(), Error> {
 pub fn write(filepath: &str, body: &str) -> Result<(), Box<dyn std::error::Error>> {
   let item = TodoItem::new(body);
 
-  item.save_to(filepath)?;
+  let formatted_text = item.format_dense();
+
+  file_handler::append_to(filepath, formatted_text.as_str())?;
 
   Ok(())
 }

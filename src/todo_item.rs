@@ -72,18 +72,15 @@ impl TodoItem {
     todo
   }
 
-  pub fn save_to(&self, filename: &str) -> Result<(), Box<dyn Error>> {
-    let mut file = OpenOptions::new()
-      .append(true)
-      .create(true)
-      .open(filename)?;
-    
-    file.write_all(self.format_output().as_bytes())?;
-
-    Ok(())
+  pub fn format_dense(&self) -> String {
+    let status = match &self.status {
+      Some(val) => val.to_string(),
+      None => panic!("Could not convert TodoItem.status to String")
+    };
+    format!("^#id:\"{}\",status:\"{}\",description:\"{}\"#$", self.id, status, self.description)
   }
 
-  fn format_output(&self) -> String {
+  pub fn format_pretty(&self) -> String {
     let status = match &self.status {
       Some(val) => val.to_string(),
       None => panic!("Could not convert TodoItem.status to String")

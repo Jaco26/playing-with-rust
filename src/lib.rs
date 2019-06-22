@@ -1,6 +1,7 @@
 pub mod user_actions;
 pub mod util;
 pub mod todo_item;
+pub mod file_handler;
 
 #[derive(Debug)]
 pub enum Action {
