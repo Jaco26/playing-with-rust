@@ -6,21 +6,32 @@ use super::todo_item::TodoItem;
 use super::file_handler;
 
 
-pub fn read(filepath: &str) -> Result<(), Error> {
+pub fn read(filepath: &str) -> Result<HashMap<String, TodoItem>, Error> {
   let file_text = fs::read_to_string(filepath)?;
 
-  let todos_map: HashMap<String, TodoItem> = file_text.split("\n\r")
+  let todos_map: HashMap<String, TodoItem> = file_text.split("^#")
     .fold(HashMap::<String, TodoItem>::new(), |mut acc, section| {
-      if !section.trim().is_empty() {
-        let todo_item = TodoItem::from_text(section);
-        acc.insert(todo_item.id.to_string(), todo_item);
+      if !section.is_empty() {
+        let mut id = "";
+        let mut status = "";
+        let mut description = "";
+        for line in section.lines() {
+          let mut segments = line.split(":");
+          let key = segments.next().unwrap_or("");
+          let value = segments.next().unwrap_or("");
+          match key {
+            "id" => id = value,
+            "status" => status = value,
+            "description" => description = value,
+            _ => (),
+          }
+        }
+        acc.insert(String::from(id), TodoItem::from_args(id, status, description));
       }
       acc
     });
-  
-  println!("{:#?}", todos_map);
 
-  Ok(())
+  Ok(todos_map)
 }
 
 pub fn write(filepath: &str, body: &str) -> Result<(), Box<dyn std::error::Error>> {

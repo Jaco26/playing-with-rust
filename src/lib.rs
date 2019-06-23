@@ -49,10 +49,14 @@ impl Config {
   pub fn dispatch_action(&self) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(action) = &self.action {
       match action {
-        Action::Read => user_actions::read(&self.output_file)?,
+        Action::Read => {
+          let todos_map = user_actions::read(&self.output_file)?;
+          println!("{:#?}", todos_map);
+        },
         Action::Create{ body } => {
           user_actions::write(&self.output_file, &body)?;
         },
+        _ => (),
       }
     };
     Ok(())
