@@ -2,8 +2,8 @@
 use std::fs;
 use std::io::{ Error };
 use std::collections::HashMap;
-use super::todo_item::TodoItem;
-use super::file_handler;
+use crate::todo_item::TodoItem;
+use crate::util::file_handler;
 
 
 pub fn read(filepath: &str) -> Result<HashMap<String, TodoItem>, Error> {

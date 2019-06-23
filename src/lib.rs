@@ -1,7 +1,8 @@
-pub mod user_actions;
+mod user_actions;
+mod todo_item;
 pub mod util;
-pub mod todo_item;
-pub mod file_handler;
+
+use util::file_handler;
 
 #[derive(Debug)]
 pub enum Action {
@@ -37,7 +38,7 @@ impl Config {
       "-r" => self.action = Some(Action::Read),
       "-w" => {
         match &self.body {
-          Some(txt) => self.action = Some(Action::Create { body: String::from(txt.as_str()) }),
+          Some(txt) => self.action = Some(Action::Create { body: txt.to_string() }),
           None => return Err("No body provided with -w action flag"),
         };
       },
@@ -47,18 +48,24 @@ impl Config {
   }
 
   pub fn dispatch_action(&self) -> Result<(), Box<dyn std::error::Error>> {
+
+    file_handler::toggle_file_lock(&self.output_file, false)?;
+
     if let Some(action) = &self.action {
       match action {
         Action::Read => {
           let todos_map = user_actions::read(&self.output_file)?;
           println!("{:#?}", todos_map);
         },
+
         Action::Create{ body } => {
           user_actions::write(&self.output_file, &body)?;
         },
-        _ => (),
       }
     };
+
+    file_handler::toggle_file_lock(&self.output_file, true)?;
+
     Ok(())
   }
 }
