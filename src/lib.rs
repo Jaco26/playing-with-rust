@@ -7,11 +7,13 @@ use util::file_handler;
 #[derive(Debug)]
 pub enum Action {
   Create { body: String },
+  Update { id: String, body: String }, 
   Read,
 }
 
 pub struct Config {
   flag: String,
+  id: Option<String>,
   pub output_file: String,
   body: Option<String>,
   action: Option<Action>,
@@ -30,7 +32,14 @@ impl Config {
 
     let body = args.next();
 
-    Ok( Config { flag, output_file, body, action: None  } )
+    let id = match args.next() {
+      Some(val) => val,
+      None => None,
+    };
+
+
+
+    Ok( Config { flag, output_file, body, id, action: None } )
   }
 
   pub fn parse_args(&mut self) -> Result<(), &'static str> {
@@ -42,6 +51,17 @@ impl Config {
           None => return Err("No body provided with -w action flag"),
         };
       },
+      "-u" => {
+        match &self.body {
+          Some(txt) => {
+            match &self.id {
+              Some(val) => self.action = Some(Action::Update { id: val.to_string(), body: txt.to_string() }),
+              None => panic!("No Id provided for update"),
+            };
+          },
+          None => return Err("No body provided with -w action flag"),
+        };
+      }
       _ => return Err("No action flag present")
     };
     Ok(())
@@ -61,6 +81,10 @@ impl Config {
         Action::Create{ body } => {
           user_actions::write(&self.output_file, &body)?;
         },
+
+        Action::Update { id, body } => {
+          user_actions::update_body(&self.output_file, id, body);
+        }
       }
     };
 

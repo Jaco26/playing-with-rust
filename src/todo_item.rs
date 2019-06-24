@@ -10,7 +10,7 @@ pub enum Completion {
 }
 
 impl Completion {
-  fn to_string(&self) -> String {
+  pub fn to_string(&self) -> String {
     match *self {
       Completion::Reopened => String::from("reopened"),
       Completion::Complete => String::from("complete"),

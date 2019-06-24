@@ -14,6 +14,16 @@ pub fn append_to(filename: &str, body: &str) -> Result<(), Box<dyn std::error::E
   Ok(())
 }
 
+pub fn do_write(filename: &str, body: &str) -> Result<(), Box<dyn std::error::Error>> {
+  let mut file = OpenOptions::new()
+    .write(true)
+    .open(filename)?;
+  
+  file.write_all(body.as_bytes())?;
+
+  Ok(())
+}
+
 pub fn write_new(filename: &str, body: &str) ->  Result<(), Box<dyn std::error::Error>> {
   let mut file = OpenOptions::new()
     .write(true)
