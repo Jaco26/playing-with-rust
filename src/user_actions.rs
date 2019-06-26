@@ -2,7 +2,7 @@
 use std::fs;
 use std::io::{ Error };
 use std::collections::HashMap;
-use crate::todo_item::{TodoItem, Completion};
+use crate::todo_item::TodoItem;
 use crate::util::file_handler;
 
 
@@ -62,6 +62,13 @@ pub fn update_body(filepath: &str, id: &str, body: &str) -> Result<(), Box<dyn s
   let updated = TodoItem::from_args(id, status.as_str(), body);
 
   todos_map.insert(String::from(id), updated).unwrap();
+
+  let new_text = todos_map.values().fold(String::from(""), |mut acc, item| {
+    acc.push_str(item.format_dense().as_str());
+    acc
+  });
+
+  file_handler::do_write(filepath, new_text.as_str())?;
 
   println!("Updated Todos HashMap: {:#?}", todos_map);
 

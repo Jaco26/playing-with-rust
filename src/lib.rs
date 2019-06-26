@@ -1,5 +1,6 @@
 mod user_actions;
 mod todo_item;
+mod arguments;
 pub mod util;
 
 use util::file_handler;
@@ -13,8 +14,8 @@ pub enum Action {
 
 pub struct Config {
   flag: String,
-  id: Option<String>,
   pub output_file: String,
+  id: Option<String>,
   body: Option<String>,
   action: Option<Action>,
 }
@@ -32,11 +33,7 @@ impl Config {
 
     let body = args.next();
 
-    let id = match args.next() {
-      Some(val) => val,
-      None => None,
-    };
-
+    let id = args.next();
 
 
     Ok( Config { flag, output_file, body, id, action: None } )
@@ -83,7 +80,7 @@ impl Config {
         },
 
         Action::Update { id, body } => {
-          user_actions::update_body(&self.output_file, id, body);
+          user_actions::update_body(&self.output_file, id, body)?;
         }
       }
     };
